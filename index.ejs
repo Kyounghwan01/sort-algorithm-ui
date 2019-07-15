@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title><%= htmlWebpackPlugin.options.title %></title>
+    </head>
+    <body>
+        <div class="stage-one">
+            <div class="step">블록 수 및 정렬 방법 선택</div>
+            <div>
+                <select id="sel-num">
+                    <option value="5" selected>5개</option>
+                    <option value="6">6개</option>
+                    <option value="7">7개</option>
+                    <option value="8">8개</option>
+                    <option value="9">9개</option>
+                    <option value="10">10개</option>
+                </select>
+                <select id="sel-sort">
+                    <option value="Bubble" selected>Bubble</option>
+                    <option value="Merge">Merge</option>
+                </select>
+                <input type="button" value="만들기" id="sel-submit" />
+            </div>
+        </div>
+        <div class="stage-two">
+          <h2 style="color:white">블록의 수를 입력하세요</h1>
+          <div class="boxes"></div>
+          <input type="button" value="실행!" id="submit" />
+        </div>
+        <div class="stage-three">
+          <h1 class = "stage-title">sort : </h2>
+          <div class="main"></div>
+        </div>
+    </body>
+</html>
