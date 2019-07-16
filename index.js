@@ -1,5 +1,6 @@
 // Load application styles
 import "styles/index.less";
+import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "constants";
 
 // ================================
 // START YOUR APP HERE
@@ -14,7 +15,11 @@ const selSort = document.querySelector("#sel-sort");
 const boxes = document.querySelector(".boxes");
 const stageTitle = document.querySelector(".stage-title");
 const main = document.querySelector(".main");
-let data = [];
+var sortInterval = null;
+var bubbleSortIndex = null;
+let values = [];
+var i = 0;
+var j = 0;
 
 selSubmit.addEventListener("click", function() {
     stageOne.classList.add("disappear");
@@ -43,7 +48,7 @@ submit.addEventListener("click", function() {
         stageTwo.classList.add("disappear");
         stageTitle.innerHTML = `${selSort.value} sort`;
     } else {
-        //mergeSort();
+        mergeSort();
         stageTitle.innerHTML = `${selSort.value} sort`;
     }
 });
@@ -64,16 +69,57 @@ function keyPrevent(e) {
 
 function bubbleSort() {
     const maneyBox = document.querySelectorAll(".text");
-    for (var i = 0; i < maneyBox.length; i++) {
-        data.push(Number(maneyBox[i].value));
+    for (let i = 0; i < maneyBox.length; i++) {
+        values.push(Number(maneyBox[i].value));
         var building = document.createElement("div");
         building.classList.add("building-style");
         building.textContent = Number(maneyBox[i].value);
         building.style.height = `${Number(maneyBox[i].value) * 70}px`;
-        building.dataset.id = Number(maneyBox[i].value);
+        building.id = Number(maneyBox[i].value);
         main.appendChild(building);
     }
-    console.log(data);
+    sortInterval = setInterval(function() {
+        bubbleFunc();
+    }, 1000);
+}
+
+//each time draw
+
+var j = 0;
+function bubbleFunc() {
+    if (i < values.length) {
+        j = 0;
+        function bubble() {
+            if (j < values.length - i) {
+                let a = values[j];
+                let b = values[j + 1];
+                if (a > b) {
+                    swap(values, j, j + 1);
+                }
+                j++;
+            } else {
+                clearInterval(bubbleSortIndex);
+            }
+        }
+        bubbleSortIndex = setInterval(function() {
+            bubble();
+        }, 100);
+        i++;
+    } else {
+        clearInterval(sortInterval);
+    }
+}
+
+function swap(arr, i, j) {
+    var temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+
+    for (let k = 0; k < values.length; k++) {
+        const buildingStyle = document.querySelectorAll(".building-style");
+        buildingStyle[k].style.height = `${values[k] * 70}px`;
+        buildingStyle[k].textContent = values[k];
+    }
 }
 
 function mergeSort() {
