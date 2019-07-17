@@ -1,6 +1,9 @@
 // Load application styles
 import "styles/index.less";
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from "constants";
+import {
+    SSL_OP_SSLEAY_080_CLIENT_DH_BUG,
+    DH_NOT_SUITABLE_GENERATOR
+} from "constants";
 
 // ================================
 // START YOUR APP HERE
@@ -16,12 +19,13 @@ const boxes = document.querySelector(".boxes");
 const stageTitle = document.querySelector(".stage-title");
 const main = document.querySelector(".main");
 var sortInterval = null;
-var bubbleSortIndex = null;
 let values = [];
 var i = 0;
 var j = 0;
 
 selSubmit.addEventListener("click", function() {
+    const dis = document.querySelectorAll(".disappear");
+    dis[0].classList.remove("disappear");
     stageOne.classList.add("disappear");
     for (let i = 0; i < selNum.value; i++) {
         let box = document.createElement("input");
@@ -34,7 +38,9 @@ selSubmit.addEventListener("click", function() {
     }
 });
 
-submit.addEventListener("click", function() {
+submit.addEventListener("click", makeBlock);
+
+function makeBlock() {
     const maneyBox = document.querySelectorAll(".text");
     for (let i = 0; i < maneyBox.length; i++) {
         if (maneyBox[i].value === "") {
@@ -42,16 +48,31 @@ submit.addEventListener("click", function() {
             return;
         }
     }
-    if (selSort.value === "Bubble") {
-        console.log(selSort);
-        bubbleSort();
-        stageTwo.classList.add("disappear");
-        stageTitle.innerHTML = `${selSort.value} sort`;
-    } else {
-        mergeSort();
-        stageTitle.innerHTML = `${selSort.value} sort`;
+
+    const dis = document.querySelectorAll(".disappear");
+    dis[1].classList.remove("disappear");
+    stageTwo.classList.add("disappear");
+
+    for (let i = 0; i < maneyBox.length; i++) {
+        values.push(Number(maneyBox[i].value));
+        var building = document.createElement("div");
+        building.classList.add("building-style");
+        building.textContent = Number(maneyBox[i].value);
+        building.style.height = `${Number(maneyBox[i].value) * 70}px`;
+        building.id = Number(maneyBox[i].value);
+        main.appendChild(building);
     }
-});
+
+    if (selSort.value === "Bubble") {
+        stageTitle.innerHTML = `${selSort.value} sort`;
+        sortInterval = setInterval(function() {
+            bubbleSort();
+        }, 1000);
+    } else {
+        stageTitle.innerHTML = `${selSort.value} sort`;
+        quickSort();
+    }
+}
 
 function keyPrevent(e) {
     var keyID = e.keyCode;
@@ -67,26 +88,10 @@ function keyPrevent(e) {
     }
 }
 
-function bubbleSort() {
-    const maneyBox = document.querySelectorAll(".text");
-    for (let i = 0; i < maneyBox.length; i++) {
-        values.push(Number(maneyBox[i].value));
-        var building = document.createElement("div");
-        building.classList.add("building-style");
-        building.textContent = Number(maneyBox[i].value);
-        building.style.height = `${Number(maneyBox[i].value) * 70}px`;
-        building.id = Number(maneyBox[i].value);
-        main.appendChild(building);
-    }
-    sortInterval = setInterval(function() {
-        bubbleFunc();
-    }, 1000);
-}
-
 //each time draw
 
-var j = 0;
-function bubbleFunc() {
+function bubbleSort() {
+    var bubbleSortIndex = null;
     if (i < values.length) {
         j = 0;
         function bubble() {
@@ -110,6 +115,44 @@ function bubbleFunc() {
     }
 }
 
+function quickSort(left,right) {
+    //console.log(values);
+    if(!left) left = 0;
+    if(!right) right = values.length - 1;
+    var pivotIndex = right;
+    pivotIndex = partition(left, right -1, pivotIndex);
+    // console.log(pivotIndex);
+    if(left < pivotIndex -1){
+        quickSort(left,pivotIndex -1);
+    }
+    if(pivotIndex +1 < right){
+        quickSort(pivotIndex +1, right);
+    }
+    console.log(values);
+    return values
+}
+
+function partition(left,right,pivotIndex){
+    console.log(values);
+    var pivot = values[pivotIndex];
+    while(left <= right){
+        while(values[left] < pivot){
+            left++;
+        }
+        while(values[right] > pivot){
+            right--;
+        }
+        if(left <= right){
+            swap(values,left,right);
+            left++;
+            right--;
+        }
+    }
+    swap(values,left,pivotIndex)
+    return left;
+}
+
+
 function swap(arr, i, j) {
     var temp = arr[i];
     arr[i] = arr[j];
@@ -120,8 +163,4 @@ function swap(arr, i, j) {
         buildingStyle[k].style.height = `${values[k] * 70}px`;
         buildingStyle[k].textContent = values[k];
     }
-}
-
-function mergeSort() {
-    //머지 정렬
 }
