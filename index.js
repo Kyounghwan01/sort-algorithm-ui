@@ -19,9 +19,11 @@ const boxes = document.querySelector(".boxes");
 const stageTitle = document.querySelector(".stage-title");
 const main = document.querySelector(".main");
 var sortInterval = null;
+var insertInterval = null;
 let values = [];
 var i = 0;
 var j = 0;
+let states = [];
 
 selSubmit.addEventListener("click", function() {
     const dis = document.querySelectorAll(".disappear");
@@ -68,6 +70,12 @@ function makeBlock() {
         sortInterval = setInterval(function() {
             bubbleSort();
         }, 1000);
+    } else if (selSort.value === "Insertion") {
+        stageTitle.innerHTML = `${selSort.value} sort`;
+        i = 1;
+        insertInterval = setInterval(function() {
+            insertionSort();
+        }, 1000);
     } else {
         stageTitle.innerHTML = `${selSort.value} sort`;
         quickSort();
@@ -96,10 +104,8 @@ function bubbleSort() {
         j = 0;
         function bubble() {
             if (j < values.length - i) {
-                let a = values[j];
-                let b = values[j + 1];
-                if (a > b) {
-                    swap(values, j, j + 1);
+                if (values[j] > values[j + 1]) {
+                    bubbleswap(values, j, j + 1);
                 }
                 j++;
             } else {
@@ -115,52 +121,92 @@ function bubbleSort() {
     }
 }
 
-function quickSort(left,right) {
-    //console.log(values);
-    if(!left) left = 0;
-    if(!right) right = values.length - 1;
-    var pivotIndex = right;
-    pivotIndex = partition(left, right -1, pivotIndex);
-    // console.log(pivotIndex);
-    if(left < pivotIndex -1){
-        quickSort(left,pivotIndex -1);
+function insertionSort() {
+    if (i < values.length) {
+        let temp = values[i];
+        j = i - 1;
+        while (j >= 0 && values[j] > temp) {
+            values[j + 1] = values[j];
+            j = j - 1;
+        }
+        values[j + 1] = temp;
+        for (let k = 0; k < values.length; k++) {
+            const buildingStyle = document.querySelectorAll(".building-style");
+            buildingStyle[k].style.height = `${values[k] * 70}px`;
+            buildingStyle[k].textContent = values[k];
+        }
+        i++;
+    } else {
+        clearInterval(insertInterval);
     }
-    if(pivotIndex +1 < right){
-        quickSort(pivotIndex +1, right);
-    }
-    console.log(values);
-    return values
 }
 
-function partition(left,right,pivotIndex){
+async function quickSort(left, right) {
+    //console.log(values);
+    if (!left) left = 0;
+    if (!right) right = values.length - 1;
+    var pivotIndex = right;
+    pivotIndex = await partition(left, right - 1, pivotIndex);
+    if (left < pivotIndex - 1) {
+        await quickSort(left, pivotIndex - 1);
+        console.log("1");
+    }
+    if (pivotIndex + 1 < right) {
+        await quickSort(pivotIndex + 1, right);
+        console.log("2");
+    }
     console.log(values);
+    return values;
+}
+
+async function partition(left, right, pivotIndex) {
     var pivot = values[pivotIndex];
-    while(left <= right){
-        while(values[left] < pivot){
+    while (left <= right) {
+        while (values[left] < pivot) {
             left++;
+            console.log("3");
         }
-        while(values[right] > pivot){
+        while (values[right] > pivot) {
             right--;
+            console.log("4");
         }
-        if(left <= right){
-            swap(values,left,right);
+        if (left <= right) {
+            console.log("5");
+            await swap(values, left, right);
             left++;
             right--;
         }
     }
-    swap(values,left,pivotIndex)
+    await swap(values, left, pivotIndex);
+    console.log("6");
     return left;
 }
 
-
-function swap(arr, i, j) {
+function bubbleswap(arr, i, j) {
     var temp = arr[i];
     arr[i] = arr[j];
     arr[j] = temp;
-
     for (let k = 0; k < values.length; k++) {
         const buildingStyle = document.querySelectorAll(".building-style");
         buildingStyle[k].style.height = `${values[k] * 70}px`;
         buildingStyle[k].textContent = values[k];
     }
+}
+
+async function swap(arr, i, j) {
+    await aniTime(500);
+    var temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+    for (let k = 0; k < values.length; k++) {
+        const buildingStyle = document.querySelectorAll(".building-style");
+        buildingStyle[k].style.height = `${values[k] * 70}px`;
+        buildingStyle[k].textContent = values[k];
+    }
+}
+
+function aniTime(ms) {
+    return new Promise(function(resolve) {
+        setTimeout(resolve, ms);
+    });
 }
